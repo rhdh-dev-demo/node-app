@@ -1,0 +1,94 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: node-app
+  description: A Node.js application
+  annotations:
+    # TechDocs - Documentation as code
+    backstage.io/techdocs-ref: dir:.
+
+    # GitHub - PRs, Issues, Actions
+    github.com/project-slug: rhdh-dev-demo/node-app
+    
+    # ArgoCD - Deployment status
+    argocd/app-selector: rhdh-demo/application=node-app
+    
+    # Kubernetes Topology - Pods, logs
+    backstage.io/kubernetes-id: node-app
+    
+    # Tekton - Pipeline runs
+    tekton.dev/pipeline: node-app-build
+    tekton.dev/cicd: 'true'
+    
+    # Quay - Image security (if using Quay)
+    quay.io/repository-slug: karthik_jk/node-app
+  labels:
+    app.kubernetes.io/name: node-app
+    app.kubernetes.io/part-of: node-app-system
+  tags:
+    - nodejs
+    - tekton
+    - argocd
+    - gitops
+  links:
+    - url: https://github.com/rhdh-dev-demo/node-app
+      title: Source Code
+      icon: github
+    - url: https://github.com/rhdh-dev-demo/node-app-gitops
+      title: GitOps Repository
+      icon: github
+    - url: https://openshift-gitops-server-openshift-gitops.apps.rosa.bg2oe-zwi5k-mny.w9d2.p3.openshiftapps.com/applications/node-app-dev
+      title: ArgoCD - DEV
+      icon: dashboard
+    - url: https://openshift-gitops-server-openshift-gitops.apps.rosa.bg2oe-zwi5k-mny.w9d2.p3.openshiftapps.com/applications/node-app-staging
+      title: ArgoCD - Staging
+      icon: dashboard
+    - url: https://openshift-gitops-server-openshift-gitops.apps.rosa.bg2oe-zwi5k-mny.w9d2.p3.openshiftapps.com/applications/node-app-prod
+      title: ArgoCD - PROD
+      icon: dashboard
+    - url: https://console-openshift-console.apps.rosa.bg2oe-zwi5k-mny.w9d2.p3.openshiftapps.com/k8s/ns/node-app-dev/deployments
+      title: OpenShift Console - DEV
+      icon: web
+    - url: https://console-openshift-console.apps.rosa.bg2oe-zwi5k-mny.w9d2.p3.openshiftapps.com/k8s/ns/node-app-prod/deployments
+      title: OpenShift Console - PROD
+      icon: web
+    - url: https://quay.io/karthik_jk/node-app
+      title: Container Image
+      icon: docker
+spec:
+  type: service
+  lifecycle: production
+  owner: group:default/ui-team
+  system: node-app-system
+  providesApis:
+    - node-app-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: node-app-system
+  description: System for node-app application
+  tags:
+    - nodejs
+spec:
+  owner: group:default/ui-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: node-app-api
+  description: REST API for node-app
+  tags:
+    - rest
+    - openapi
+  links:
+    - url: https://node-app-node-app-dev.apps.rosa.bg2oe-zwi5k-mny.w9d2.p3.openshiftapps.com/health
+      title: Health Endpoint (DEV)
+      icon: web
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:default/ui-team
+  system: node-app-system
+  definition:
+    $text: ./api/openapi.yaml
